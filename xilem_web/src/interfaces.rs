@@ -14,6 +14,7 @@
 use std::borrow::Cow;
 
 use crate::{
+    after_build::AfterBuild,
     attribute::{Attr, WithAttributes},
     class::{AsClassIter, Class, WithClasses},
     events,
@@ -77,6 +78,13 @@ pub trait Element<State, Action = ()>:
         value: impl IntoAttributeValue,
     ) -> Attr<Self, State, Action> {
         Attr::new(self, name.into(), value.into_attr_value())
+    }
+
+    fn after_build<F>(self, callback: F) -> AfterBuild<Self, F>
+    where
+        F: Fn(&Self::Element),
+    {
+        AfterBuild::new(self, callback)
     }
 
     /// Add a class to an [`Element`]
