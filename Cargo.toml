@@ -6,6 +6,7 @@ members = [
     "masonry",
 
     "xilem_web",
+    "xilem_web/web_examples/composed_view_context",
     "xilem_web/web_examples/counter",
     "xilem_web/web_examples/counter_custom_element",
     "xilem_web/web_examples/elm",
@@ -48,6 +49,7 @@ rust.trivial_numeric_casts = "warn"
 rust.unused_macro_rules = "warn"
 rust.variant_size_differences = "warn"
 
+clippy.pedantic = { level = "warn", priority = -1 }
 clippy.allow_attributes_without_reason = "warn"
 clippy.collection_is_never_read = "warn"
 clippy.debug_assert_with_mut_call = "warn"
