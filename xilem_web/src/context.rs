@@ -45,6 +45,7 @@ pub struct ViewCtx {
     /// A stack containing modifier count size-hints for each element context, mostly to avoid unnecessary allocations.
     modifier_size_hints: Vec<VecMap<TypeId, usize>>,
     modifier_size_hint_stack_idx: usize,
+    custom_data: Option<Box<dyn Any>>,
 }
 
 impl Default for ViewCtx {
@@ -59,6 +60,7 @@ impl Default for ViewCtx {
             // One element for the root `DomFragment`. will be extended with `Self::push_size_hints`
             modifier_size_hints: vec![VecMap::default()],
             modifier_size_hint_stack_idx: 0,
+            custom_data: Default::default(),
         }
     }
 }
@@ -95,6 +97,23 @@ impl ViewCtx {
         let r = f(self);
         self.is_hydrating = is_hydrating;
         r
+    }
+
+    pub fn with_data<F, D, R>(&mut self, data: D, f: F) -> R
+    where
+        F: FnOnce(&mut Self) -> R,
+        D: 'static,
+    {
+        self.custom_data = Some(Box::new(data));
+        let result = f(self);
+        self.custom_data = None;
+        result
+    }
+
+    pub fn custom_data<D: 'static>(&mut self) -> Option<&D> {
+        self.custom_data
+            .as_ref()
+            .and_then(|b| b.downcast_ref::<D>())
     }
 
     pub(crate) fn is_hydrating(&self) -> bool {
