@@ -84,7 +84,9 @@ pub mod svg;
 
 pub use self::{
     after_update::{
-        after_build, after_rebuild, before_teardown, AfterBuild, AfterRebuild, BeforeTeardown,
+        after_build, after_build_with_proxy, after_rebuild, before_teardown,
+        before_teardown_with_proxy, AfterBuild, AfterBuildWithProxy, AfterRebuild, BeforeTeardown,
+        BeforeTeardownWithProxy,
     },
     app::App,
     attribute_value::{AttributeValue, IntoAttributeValue},
@@ -181,6 +183,23 @@ pub trait DomView<State, Action = ()>:
         after_build(self, callback)
     }
 
+    // TODO: add docs
+    fn after_build_with_proxy<F, H, M>(
+        self,
+        callback: F,
+        on_event: H,
+    ) -> AfterBuildWithProxy<State, Action, Self, F, H, M>
+    where
+        State: 'static,
+        Action: 'static,
+        Self: Sized,
+        F: Fn(&Self::DomNode, concurrent::TaskProxy) + 'static,
+        H: Fn(&mut State, M) -> Action + 'static,
+        M: Message,
+    {
+        after_build_with_proxy(self, callback, on_event)
+    }
+
     /// See [`after_rebuild`](`after_update::after_rebuild`)
     fn after_rebuild<F>(self, callback: F) -> AfterRebuild<State, Action, Self, F>
     where
@@ -201,6 +220,21 @@ pub trait DomView<State, Action = ()>:
         F: Fn(&Self::DomNode) + 'static,
     {
         before_teardown(self, callback)
+    }
+
+    fn before_teardown_with_proxy<F, H, M>(
+        self,
+        callback: F,
+        on_event: H,
+    ) -> BeforeTeardownWithProxy<State, Action, Self, F, H, M>
+    where
+        State: 'static,
+        Action: 'static,
+        Self: Sized,
+        F: Fn(&Self::DomNode, concurrent::TaskProxy) + 'static,
+        H: Fn(&mut State, M) -> Action + 'static,
+    {
+        before_teardown_with_proxy(self, callback, on_event)
     }
 
     /// See [`map_state`](`core::map_state`)

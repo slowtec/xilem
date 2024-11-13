@@ -112,6 +112,12 @@ pub struct TaskProxy {
 }
 
 impl TaskProxy {
+    pub(crate) fn new(thunk: MessageThunk) -> Self {
+        Self {
+            thunk: Rc::new(thunk),
+        }
+    }
+
     pub fn send_message<M>(&self, message: M)
     where
         M: Message,
@@ -144,9 +150,7 @@ where
         let view_state = TaskState {
             abort_handle: Some(abort_handle),
         };
-        let proxy = TaskProxy {
-            thunk: Rc::new(thunk),
-        };
+        let proxy = TaskProxy::new(thunk);
         spawn_local((self.init_future)(proxy, shutdown_signal));
         (NoElement, view_state)
     }
