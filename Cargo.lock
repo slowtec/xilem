@@ -683,6 +683,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "communication_with_the_outside_world"
+version = "0.0.0"
+dependencies = [
+ "console_error_panic_hook",
+ "console_log",
+ "futures",
+ "gloo-timers",
+ "log",
+ "wasm-bindgen-futures",
+ "xilem_web",
+]
+
+[[package]]
 name = "concurrent-queue"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -6,6 +6,7 @@ members = [
     "masonry",
 
     "xilem_web",
+    "xilem_web/web_examples/communication_with_the_outside_world",
     "xilem_web/web_examples/counter",
     "xilem_web/web_examples/counter_custom_element",
     "xilem_web/web_examples/elm",
