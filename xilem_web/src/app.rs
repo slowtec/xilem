@@ -68,6 +68,42 @@ where
         // Latter may not be necessary, we have an rc loop.
         std::mem::forget(self);
     }
+
+    pub fn update<F>(&self, mut update_fn: F)
+    where
+        F: FnMut(&mut State),
+    {
+        {
+            let mut inner_guard = self.0.borrow_mut();
+            let inner = &mut *inner_guard;
+            (update_fn)(&mut inner.data);
+        }
+        self.rebuild();
+    }
+
+    fn rebuild(&self) {
+        let mut inner_guard = self.0.borrow_mut();
+        let inner = &mut *inner_guard;
+        if let Some(fragment) = &mut inner.fragment {
+            let new_fragment = (inner.app_logic)(&mut inner.data);
+            let mut dom_children_splice = DomChildrenSplice::new(
+                &mut inner.fragment_append_scratch,
+                &mut inner.elements,
+                &mut inner.vec_splice_scratch,
+                &inner.root,
+                inner.ctx.fragment.clone(),
+                false,
+                false,
+            );
+            new_fragment.seq_rebuild(
+                fragment,
+                inner.fragment_state.as_mut().unwrap(),
+                &mut inner.ctx,
+                &mut dom_children_splice,
+            );
+            *fragment = new_fragment;
+        }
+    }
 }
 
 impl<State, Fragment: DomFragment<State>, InitFragment: FnMut(&mut State) -> Fragment>
