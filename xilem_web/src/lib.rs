@@ -76,6 +76,7 @@ mod vecmap;
 pub mod concurrent;
 pub mod diff;
 pub mod elements;
+pub mod event_handler;
 pub mod events;
 pub mod interfaces;
 pub mod modifiers;
